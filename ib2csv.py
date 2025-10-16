@@ -25,7 +25,7 @@ else:
     try:
         getAccounts(app)
         getOpenOrders(app)
-        getCurrencies(app, BaseCur)  # a little help to convert malaysian currency... , {"MYR":0.2372}
+        getCurrencies(app, BaseCur)
         getAssetDetails(app)
 
         ibDisconnect(app)
