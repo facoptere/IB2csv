@@ -4,10 +4,10 @@ import locale
 import os
 import sys
 from utils import SetupLogger, ibConnect, getAccounts, getOpenOrders, getCurrencies, getAssetDetails, ibDisconnect, computeThings
-    
+
 
 logger = SetupLogger()
-logging.getLogger().setLevel(logging.WARNING)
+logging.getLogger().setLevel(logging.DEBUG)
 
 ipaddr = os.getenv("IPADDR", "127.0.0.1")
 BaseCur = ['USD', 'CHF', 'EUR'] 
@@ -25,7 +25,7 @@ else:
     try:
         getAccounts(app)
         getOpenOrders(app)
-        getCurrencies(app, BaseCur, {"MYR":0.2372})  # a little help to convert malaysian currency...
+        getCurrencies(app, BaseCur)  # a little help to convert malaysian currency... , {"MYR":0.2372}
         getAssetDetails(app)
 
         ibDisconnect(app)

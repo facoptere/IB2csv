@@ -5,8 +5,12 @@ import threading
 import time
 from ibapi.contract import Contract
 from typing import Dict, List, Optional, Any 
-# import os
+import os
+from cachedfaz import CachedFrankfurter
 
+
+basedir = os.getenv("GT_DG_DIRECTORY") or "."
+forex_api = CachedFrankfurter(os.path.join(basedir, "cacheFrankfurter.bin"))    
 
 logger = logging.getLogger()
 
@@ -130,6 +134,11 @@ def getCurrencies(app: TradeApp, BaseCur: List[str], cooked: Optional[Dict[str, 
 
     if cooked:
         app.currency = {**app.currency, **cooked}
+        
+    for cur in app.currency.keys():
+        rate = app.currency[cur]
+        if rate <= 0:
+            app.currency[cur] = forex_api.convert(cur, "USD")
         
     for cur in app.currency.keys():
         if app.currency[cur] < 0:
