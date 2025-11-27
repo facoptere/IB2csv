@@ -14,7 +14,7 @@ class CachedApi:
 
     def open_db(self) -> None:
         """Open the database and perform cleanup of expired entries."""
-        logger.debug("Opening DB %s", self.__fullpath)
+        logger.warning("Opening DB %s", self.__fullpath)
         self.__db = SqliteDict(self.__fullpath)
         self._cleanup_expired_entries()
 

@@ -67,6 +67,7 @@ def getAccounts(app: TradeApp) -> Dict[str, Dict[str, Any]]:
 
 
 def getOpenOrders(app: TradeApp) -> Dict[int, Dict[str, Any]]:
+    time.sleep(1)
     app.reqAllOpenOrders()
     time.sleep(1)
     numLines = 0
@@ -171,15 +172,18 @@ def getAssetDetails(app: TradeApp) -> None:
         for idx, line in enumerate(app.portfolios[account]):
             if idx in app.contract.keys():
                 contractDetails = app.contract[idx]
-                app.portfolios[account][idx]['longName'] =       getattr(contractDetails, 'longName', "")
-                app.portfolios[account][idx]['industry'] =       getattr(contractDetails, 'industry', "")
-                app.portfolios[account][idx]['category'] =       getattr(contractDetails, 'category', "")
-                app.portfolios[account][idx]['subcategory'] =    getattr(contractDetails, 'subcategory', "")
-                app.portfolios[account][idx]['priceMagnifier'] = int(getattr(contractDetails, 'priceMagnifier', 1.0))
-                app.portfolios[account][idx]['stockType'] =      getattr(contractDetails, 'stockType', "")
-                app.portfolios[account][idx]['minSize'] =        float(getattr(contractDetails, 'minSize', 0.0001))
-                app.portfolios[account][idx]['sizeIncrement'] =  float(getattr(contractDetails, 'sizeIncrement', 1.0))
-                app.portfolios[account][idx]['minTick'] =        float(getattr(contractDetails, 'minTick', 0.0001))
+                pfcontract = {}
+                pfcontract['stockType'] =      getattr(contractDetails, 'stockType', "")
+                # if pfcontract['stockType'] != "RIGHT":  # issuance of new shares - not a portofio position
+                pfcontract['longName'] =       getattr(contractDetails, 'longName', "")
+                pfcontract['industry'] =       getattr(contractDetails, 'industry', "")
+                pfcontract['category'] =       getattr(contractDetails, 'category', "")
+                pfcontract['subcategory'] =    getattr(contractDetails, 'subcategory', "")
+                pfcontract['priceMagnifier'] = int(getattr(contractDetails, 'priceMagnifier', 1.0))
+                pfcontract['minSize'] =        float(getattr(contractDetails, 'minSize', 0.0001))
+                pfcontract['sizeIncrement'] =  float(getattr(contractDetails, 'sizeIncrement', 1.0))
+                pfcontract['minTick'] =        float(getattr(contractDetails, 'minTick', 0.0001))                    
+                app.portfolios[account][idx] = { **app.portfolios[account][idx], **pfcontract }
             else:
                 logger.error(f"Missing contract {app.portfolios[account][idx]['localSymbol']}")
 
@@ -198,6 +202,8 @@ def computeThings(app: TradeApp, BaseCur: List[str]) -> Dict[str, List[Dict[str,
                 grandtotalVal = app.accounts[account][k] 
                 app.portfolios[account].append({
                     'orderAct': '',
+                    'orderVal': 0,
+                    'orderPos': 0,
                     'secType': "TOTAL",
                     'currency': grandtotalCur,
                     'marketValue': grandtotalVal,
@@ -227,6 +233,7 @@ def computeThings(app: TradeApp, BaseCur: List[str]) -> Dict[str, List[Dict[str,
                             # valCur /= magnifier if column in ['marketPrice', 'averageCost'] else 1.0
                             # app.portfolios[account][idx][f"{column}.{currency}"] = valCur
                             line[f"{column}.{currency}"] = valCur
+                            logger.debug(f"convert currency {val} {cur} -> {valCur} {currency}, conversion rate {app.currency[cur] * app.currency[currency]}") 
                         if column == 'marketValue' and line['secType'] not in ['TOTAL', 'CASH']:
                             totalAsset[currency] += valCur
 

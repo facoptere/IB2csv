@@ -172,7 +172,15 @@ class TradeApp(EWrapper, EClient):
         if accountName not in self.portfolios.keys():
             self.portfolios[accountName] = []
         sign = -1.0 if order.action == "SELL" else 1
+<<<<<<< HEAD
         line = {
+=======
+        line = { # 
+            'orderId': orderId,    
+            'orderAlgoId': order.algoId,    
+            'orderRef': order.orderRef,    
+            'orderType': order.orderType,    
+>>>>>>> TEMP_BRANCH
             'orderAct': order.action,
             'orderVal': sign * float(order.totalQuantity) * order.lmtPrice,   # TODO / check if priceMagnifier has to be applied
             'orderPos': float(order.totalQuantity),
@@ -209,11 +217,19 @@ class TradeApp(EWrapper, EClient):
                             'orderVal': val,  # TODO / check if priceMagnifier has to be applied
         }}
         logger.info(f"orderStatus {orderId} {status} {filled} {remaining} {avgFillPrice} {permId} {parentId} {lastFillPrice} {clientId} {whyHeld}  {mktCapPrice} -> {line} ")
+<<<<<<< HEAD
         if status in ['Submitted', 'PreSubmitted']:
             self.portfolios[accountName].append(line)
         else:
             logger.warning(f"orderStatus Order  {line['orderAct']} {line['orderPos']} X {line['symbol']} "
                            f"for {line['orderVal']}{line['currency']} has unforseen status '{status}'', "
+=======
+        if status in ['Submitted', 'PreSubmitted', 'PendingSubmit']:
+            self.portfolios[accountName].append(line)
+        else:
+            logger.warning(f"orderStatus Order  {line['orderAct']} {line['orderPos']} X {line['symbol']} "
+                           f"for {line['orderVal']}{line['currency']} has unforseen status '{status}', "
+>>>>>>> TEMP_BRANCH
                            f"won't be added to portfolio")
 
 
